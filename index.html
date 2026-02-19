@@ -3,33 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Limbo</title>
+    <title>Limbo Kupfertek</title>
+
+    <!-- Manifest -->
+    <link rel="manifest" href="limbo-base/code/manifest.json">
+    <meta name="theme-color" content="#000000">
+
     <style>
-        body {
+        html, body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-        #content {
-            max-width: 600px;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
+            color: #000;
+            font-family: sans-serif;
         }
     </style>
 </head>
 <body>
 
-<div id="content">
-    <h2>Limbo wird gestartet...</h2>
-</div>
-
 <script>
 async function checkStartup() {
     try {
+        // Prüfen ob startup.html existiert
         const response = await fetch("limbo-base/workflows/startup.html", { method: "HEAD" });
 
         if (response.ok) {
@@ -38,7 +34,7 @@ async function checkStartup() {
             loadError();
         }
 
-    } catch (error) {
+    } catch {
         loadError();
     }
 }
@@ -48,17 +44,21 @@ async function loadError() {
         const response = await fetch("limbo-base/assets/system/errors/startup-error.md");
         const text = await response.text();
 
-        document.getElementById("content").innerHTML = `
-            <h2>Startup Fehler</h2>
-            <pre style="white-space: pre-wrap;">${text}</pre>
-        `;
+        // Error bleibt unsichtbar, wir zeigen keinen Text
+        console.error("Startup Error:", text);
     } catch (e) {
-        document.getElementById("content").innerHTML =
-            "<h2>Systemfehler</h2><p>Startup-Datei nicht gefunden.</p>";
+        console.error("Systemfehler beim Laden der Startup-Error-Datei");
     }
 }
 
 checkStartup();
+
+// PWA: Service Worker registrieren
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('limbo-base/code/service-worker.js')
+        .then(() => console.log('Service Worker registriert'))
+        .catch(err => console.log('Service Worker Fehler:', err));
+}
 </script>
 
 </body>
