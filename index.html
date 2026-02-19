@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limbo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        #content {
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="content">
+    <h2>Limbo wird gestartet...</h2>
+</div>
+
+<script>
+async function checkStartup() {
+    try {
+        const response = await fetch("limbo-base/workflows/startup.html", { method: "HEAD" });
+
+        if (response.ok) {
+            window.location.href = "limbo-base/workflows/startup.html";
+        } else {
+            loadError();
+        }
+
+    } catch (error) {
+        loadError();
+    }
+}
+
+async function loadError() {
+    try {
+        const response = await fetch("limbo-base/assets/system/errors/startup-error.md");
+        const text = await response.text();
+
+        document.getElementById("content").innerHTML = `
+            <h2>Startup Fehler</h2>
+            <pre style="white-space: pre-wrap;">${text}</pre>
+        `;
+    } catch (e) {
+        document.getElementById("content").innerHTML =
+            "<h2>Systemfehler</h2><p>Startup-Datei nicht gefunden.</p>";
+    }
+}
+
+checkStartup();
+</script>
+
+</body>
+</html>
